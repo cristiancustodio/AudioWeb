@@ -1,0 +1,236 @@
+@page "/audiometers"
+@using AudioWeb.Client.Pages.Dialogs
+@inject IDialogService DialogService
+
+<MudContainer MaxWidth="MaxWidth.Large" Class="py-8">
+    <MudPaper Class="pa-8" Elevation="8" Style="border-radius: 16px;">
+        <!-- Header Section -->
+        <MudStack Spacing="2" Class="mb-6">
+            <MudIcon Icon="@Icons.Material.Filled.Hearing" Size="Size.Large" Color="Color.Primary"
+                Class="align-self-center" />
+            <MudText Typo="Typo.h4" Align="Align.Center" Color="Color.Primary" Class="fw-bold">
+                Gerenciamento de Audiômetros
+            </MudText>
+            <MudText Typo="Typo.body1" Align="Align.Center" Color="Color.Secondary" Class="mb-4">
+                Controle e manutenção dos audiômetros do sistema
+            </MudText>
+            <MudDivider />
+        </MudStack>
+
+        <!-- Action Button -->
+        <MudStack Row Justify="Justify.Center" Class="mb-6">
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" Size="Size.Large"
+                StartIcon="@Icons.Material.Filled.Add" OnClick="OpenCreateDialog" Class="px-6">
+                Novo Audiômetro
+            </MudButton>
+        </MudStack>
+
+        <!-- Audiometers List -->
+        <MudGrid Spacing="4">
+            @foreach (var audiometer in audiometers)
+            {
+                <MudItem xs="12" md="6">
+                    <MudCard Class="pa-4" Elevation="4" Style="border-radius: 12px;">
+                        <MudStack Spacing="3">
+                            <!-- Header do Card -->
+                            <MudStack Row Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
+                                <MudStack Row AlignItems="AlignItems.Center" Spacing="2">
+                                    <MudIcon Icon="@Icons.Material.Filled.Hearing" Color="Color.Primary"
+                                        Size="Size.Medium" />
+                                    <MudText Typo="Typo.h6" Class="fw-bold">
+                                        @audiometer.Description
+                                    </MudText>
+                                </MudStack>
+
+                                <!-- Ações -->
+                                <MudButtonGroup Variant="Variant.Text" Size="Size.Small">
+                                    <MudIconButton Icon="@Icons.Material.Filled.Edit" Color="Color.Warning" title="Editar"
+                                        OnClick="() => EditAudiometer(audiometer)" />
+                                    <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error" title="Excluir"
+                                        OnClick="() => DeleteAudiometer(audiometer)" />
+                                </MudButtonGroup>
+                            </MudStack>
+
+                            <MudDivider />
+
+                            <!-- Informações -->
+                            <MudGrid Spacing="2">
+                                <MudItem xs="6">
+                                    <MudStack Spacing="1">
+                                        <MudText Typo="Typo.caption" Color="Color.Secondary">
+                                            <MudIcon Icon="@Icons.Material.Filled.BuildCircle" Size="Size.Small"
+                                                Class="mr-1" />
+                                            Calibração
+                                        </MudText>
+                                        @if (audiometer.CalibrationDate.HasValue)
+                                        {
+                                            <MudText Typo="Typo.body2" Class="fw-bold">
+                                                @audiometer.CalibrationDate.Value.ToString("dd/MM/yyyy")
+                                            </MudText>
+                                            <MudText Typo="Typo.caption"
+                                                Color="@GetDateStatusColor(audiometer.CalibrationDate.Value)">
+                                                @GetDateStatus(audiometer.CalibrationDate.Value)
+                                            </MudText>
+                                        }
+                                        else
+                                        {
+                                            <MudText Typo="Typo.body2" Color="Color.Warning">
+                                                Não informado
+                                            </MudText>
+                                        }
+                                    </MudStack>
+                                </MudItem>
+
+                                <MudItem xs="6">
+                                    <MudStack Spacing="1">
+                                        <MudText Typo="Typo.caption" Color="Color.Secondary">
+                                            <MudIcon Icon="@Icons.Material.Filled.FactCheck" Size="Size.Small"
+                                                Class="mr-1" />
+                                            Aferição
+                                        </MudText>
+                                        @if (audiometer.MeasurementDate.HasValue)
+                                        {
+                                            <MudText Typo="Typo.body2" Class="fw-bold">
+                                                @audiometer.MeasurementDate.Value.ToString("dd/MM/yyyy")
+                                            </MudText>
+                                            <MudText Typo="Typo.caption"
+                                                Color="@GetDateStatusColor(audiometer.MeasurementDate.Value)">
+                                                @GetDateStatus(audiometer.MeasurementDate.Value)
+                                            </MudText>
+                                        }
+                                        else
+                                        {
+                                            <MudText Typo="Typo.body2" Color="Color.Warning">
+                                                Não informado
+                                            </MudText>
+                                        }
+                                    </MudStack>
+                                </MudItem>
+                            </MudGrid>
+
+                            <!-- Status Geral -->
+                            <MudChip T="string" Text="@GetOverallStatus(audiometer)"
+                                Color="@GetOverallStatusColor(audiometer)" Size="Size.Small"
+                                Style="align-self: flex-start;" />
+                        </MudStack>
+                    </MudCard>
+                </MudItem>
+            }
+        </MudGrid>
+
+        <!-- Empty State -->
+        @if (!audiometers.Any())
+        {
+            <MudStack AlignItems="AlignItems.Center" Spacing="4" Class="pa-8">
+                <MudIcon Icon="@Icons.Material.Filled.HearingDisabled" Size="Size.Large" Color="Color.Secondary" />
+                <MudText Typo="Typo.h6" Color="Color.Secondary">Nenhum audiômetro cadastrado</MudText>
+                <MudText Typo="Typo.body2" Color="Color.Secondary" Align="Align.Center">
+                    Cadastre o primeiro audiômetro para começar o controle de calibração e aferição
+                </MudText>
+                <MudButton Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Add"
+                    OnClick="OpenCreateDialog">
+                    Cadastrar Primeiro Audiômetro
+                </MudButton>
+            </MudStack>
+        }
+
+        <!-- Footer Info -->
+        <MudStack Row Justify="Justify.Center" Class="mt-6">
+            <MudText Typo="Typo.caption" Color="Color.Tertiary" Align="Align.Center">
+                <MudIcon Icon="@Icons.Material.Filled.Info" Size="Size.Small" Class="mr-2" />
+                Última atualização: @DateTime.Now.ToString("dd/MM/yyyy HH:mm")
+            </MudText>
+        </MudStack>
+    </MudPaper>
+</MudContainer>
+
+@code {
+    private List<AudiometerModel> audiometers = new();
+    private AudiometerModel currentAudiometer = new();
+    private AudiometerModel audiometerToDelete = new();    
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadSampleData();
+    }
+
+    private async Task LoadSampleData()
+    {
+        // Dados de exemplo
+        audiometers = new List<AudiometerModel>
+        {
+            new() {
+                Id = 1,
+                Description = "Audiômetro Principal - Sala 1",
+                CalibrationDate = new DateTime(2024, 1, 15),
+                MeasurementDate = new DateTime(2024, 3, 10)
+            },
+            new() {
+                Id = 2,
+                Description = "Audiômetro Secundário - Sala 2",
+                CalibrationDate = new DateTime(2023, 11, 20),
+                MeasurementDate = new DateTime(2024, 2, 5)
+            }
+        };
+
+        await Task.Delay(0);
+    }
+
+    private async Task OpenCreateDialog()
+    {
+        var parameters = new DialogParameters
+        {
+            [nameof(AudiometerEditDialog.Audiometer)] = new AudiometerModel(),
+            [nameof(AudiometerEditDialog.IsEditing)] = false
+        };
+        var dialog = await DialogService.ShowAsync<AudiometerEditDialog>("Novo Audiômetro", parameters);
+        var result = await dialog.Result;
+        if (result != null && !result.Canceled && result.Data is AudiometerModel novo)
+        {
+            novo.Id = audiometers.Any() ? audiometers.Max(a => a.Id) + 1 : 1;
+            audiometers.Add(novo);
+            StateHasChanged();
+        }
+    }
+
+    private async Task EditAudiometer(AudiometerModel audiometer)
+    {
+        var parameters = new DialogParameters
+        {
+            [nameof(AudiometerEditDialog.Audiometer)] = new AudiometerModel
+            {
+                Id = audiometer.Id,
+                Description = audiometer.Description,
+                CalibrationDate = audiometer.CalibrationDate,
+                MeasurementDate = audiometer.MeasurementDate
+            },
+            [nameof(AudiometerEditDialog.IsEditing)] = true
+        };
+        var dialog = await DialogService.ShowAsync<AudiometerEditDialog>("Editar Audiômetro", parameters);
+        var result = await dialog.Result;
+        if (result != null && result != null && !result.Canceled && result.Data is AudiometerModel editado)
+        {
+            var index = audiometers.FindIndex(a => a.Id == editado.Id);
+            if (index >= 0)
+                audiometers[index] = editado;
+            StateHasChanged();
+        }
+    }
+
+    private async Task DeleteAudiometer(AudiometerModel audiometer)
+    {
+        var parameters = new DialogParameters
+        {
+            [nameof(DeleteAudiometerDialog.AudiometerDescription)] = audiometer.Description
+        };
+        var dialog = await DialogService.ShowAsync<DeleteAudiometerDialog>("Confirmar Exclusão", parameters);
+        var result = await dialog.Result;
+        if (result != null && !result.Canceled && result.Data is bool ok && ok)
+        {
+            audiometers.Remove(audiometer);
+            StateHasChanged();
+        }
+    }
+
+}

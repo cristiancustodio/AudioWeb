@@ -1,0 +1,38 @@
+@using MudBlazor
+
+<MudDialog>
+    <TitleContent>
+        <MudText Typo="Typo.h6" Color="Color.Error">
+            <MudIcon Icon="@Icons.Material.Filled.Warning" Class="mr-3" />
+            Confirmar Exclusão
+        </MudText>
+    </TitleContent>
+    <DialogContent>
+        <MudText>
+            Tem certeza que deseja excluir o audiômetro <strong>@AudiometerDescription</strong>?
+        </MudText>
+        <MudText Typo="Typo.body2" Color="Color.Secondary" Class="mt-2">
+            Esta ação não pode ser desfeita.
+        </MudText>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel" Variant="Variant.Text">
+            Cancelar
+        </MudButton>
+        <MudButton OnClick="Confirm" Variant="Variant.Filled" Color="Color.Error"
+            StartIcon="@Icons.Material.Filled.Delete">
+            Excluir
+        </MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] 
+    IMudDialogInstance? MudDialog { get; set; }
+
+    [Parameter] 
+    public string? AudiometerDescription { get; set; }
+    void Confirm() => MudDialog?.Close(DialogResult.Ok(true));
+    void Cancel() => MudDialog?.Cancel();
+
+}

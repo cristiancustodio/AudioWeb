@@ -1,0 +1,65 @@
+@using MudBlazor
+
+
+<MudDialog>
+    <TitleContent>
+        <MudText Typo="Typo.h6">
+            <MudIcon Icon="@(IsEditing? Icons.Material.Filled.Edit : Icons.Material.Filled.Add)" Class="mr-3" />
+            @(IsEditing ? "Editar Audiômetro" : "Novo Audiômetro")
+        </MudText>
+    </TitleContent>
+    <DialogContent>
+        <MudForm @ref="Form" @onsubmit="OnValidSubmit">
+            <MudStack Spacing="4">
+                <MudTextField T="string" @bind-Value="Audiometer.Description" Label="Descrição do Audiômetro"
+                    Required="true" RequiredError="A descrição é obrigatória" Counter="40" MaxLength="40"
+                    Variant="Variant.Outlined" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Label"
+                    HelperText="Máximo 40 caracteres" />
+                <MudDatePicker @bind-Date="Audiometer.CalibrationDate" Label="Data de Calibração"
+                    Variant="Variant.Outlined" Adornment="Adornment.Start"
+                    AdornmentIcon="@Icons.Material.Filled.BuildCircle" HelperText="Data da última calibração"
+                    MaxDate="DateTime.Today" />
+                <MudDatePicker @bind-Date="Audiometer.MeasurementDate" Label="Data de Aferição"
+                    Variant="Variant.Outlined" Adornment="Adornment.Start"
+                    AdornmentIcon="@Icons.Material.Filled.FactCheck" HelperText="Data da última aferição"
+                    MaxDate="DateTime.Today" />
+            </MudStack>
+        </MudForm>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel" Variant="Variant.Text" Color="Color.Secondary">
+            Cancelar
+        </MudButton>
+        <MudButton OnClick="OnValidSubmit" Variant="Variant.Filled" Color="Color.Primary"
+            StartIcon="@Icons.Material.Filled.Save">
+            @(IsEditing ? "Atualizar" : "Salvar")
+        </MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] IMudDialogInstance? MudDialog { get; set; }
+    [Parameter] public AudiometerModel Audiometer { get; set; } = new();
+    [Parameter] public bool IsEditing { get; set; }
+    protected MudForm? Form;
+
+    protected async Task OnValidSubmit()
+    {
+        if (Form != null)
+        {
+            await Form.Validate();
+            if (Form.IsValid)
+            {
+                MudDialog?.Close(DialogResult.Ok(Audiometer));
+            }
+        }
+
+    }
+
+    void Cancel()
+    {
+        MudDialog?.Cancel();
+        MudDialog = null;
+    }
+}
+
