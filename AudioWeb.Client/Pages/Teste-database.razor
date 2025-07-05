@@ -1,0 +1,89 @@
+@page "/teste-database"
+
+@using AudioWeb.Client.Services
+@inject AudioWeb.Client.Services.SupabaseService SupabaseService;
+
+<h3>Teste de Conexão com Supabase</h3>
+
+<div style="margin: 20px 0;">
+    <button class="btn btn-primary" @onclick="ExecuteQuery" disabled="@isLoading">
+        @if (isLoading)
+        {
+            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+            <span>Carregando...</span>
+        }
+        else
+        {
+            <span>Executar SELECT CURRENT_DATE</span>
+        }
+    </button>
+</div>
+
+@if (!string.IsNullOrEmpty(result))
+{
+    <div class="alert alert-info">
+        <strong>Resultado:</strong> @result
+    </div>
+}
+
+@if (!string.IsNullOrEmpty(errorMessage))
+{
+    <div class="alert alert-danger">
+        <strong>Erro:</strong> @errorMessage
+    </div>
+}
+
+@code {
+    private bool isLoading = false;
+    private string result = "";
+    private string errorMessage = "";
+
+    private async Task ExecuteQuery()
+    {
+        isLoading = true;
+        result = "";
+        errorMessage = "";
+
+        try
+        {
+            // Método 1: Usando função customizada no Supabase
+            var currentDate = await SupabaseService.GetCurrentDate();
+            
+            if (currentDate.HasValue)
+            {
+                result = $"Data atual: {currentDate.Value:yyyy-MM-dd HH:mm:ss}";
+            }
+            else
+            {
+                // Método 2: Alternativa usando consulta direta
+                result = await ExecuteDirectQuery();
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Erro na execução: {ex.Message}";
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private async Task<string> ExecuteDirectQuery()
+    {
+        try
+        {
+            var client = SupabaseService.GetClient();
+            await client.InitializeAsync();
+            
+            // Para consultas SQL diretas, você pode usar o método Rpc
+            // Mas primeiro precisa criar uma função no Supabase
+            var result = await client.Rpc("get_current_date", new { });
+            return result?.Content ?? "Sem resultado";
+        }
+        catch (Exception ex)
+        {
+            return $"Erro: {ex.Message}";
+        }
+    }
+}
