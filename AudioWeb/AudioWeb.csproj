@@ -8,6 +8,7 @@
 
 
   <ItemGroup>
+    <PackageReference Include="supabase" Version="1.1.1" />
     <ProjectReference Include="..\AudioWeb.Client\AudioWeb.Client.csproj" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="9.*" />
   </ItemGroup>

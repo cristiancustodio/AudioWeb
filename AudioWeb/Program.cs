@@ -11,6 +11,11 @@ builder.Services.AddMudServices();
 builder.Services.AddRazorComponents()
     .AddInteractiveWebAssemblyComponents();
 
+var supabaseOptions = builder.Configuration
+    .GetSection(AudioWeb.Client.Configuration.SupabaseOptions.SectionName)
+    .Get<AudioWeb.Client.Configuration.SupabaseOptions>();
+builder.Services.AddScoped(sp => new AudioWeb.Client.Services.SupabaseService(supabaseOptions!));
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
