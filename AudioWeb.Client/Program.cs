@@ -5,7 +5,6 @@ var builder = WebAssemblyHostBuilder.CreateDefault(args);
 
 builder.Services.AddMudServices();
 
-builder.Services.AddMudServices();
 var supabaseOptions = builder.Configuration
     .GetSection(AudioWeb.Client.Configuration.SupabaseOptions.SectionName)
     .Get<AudioWeb.Client.Configuration.SupabaseOptions>();
