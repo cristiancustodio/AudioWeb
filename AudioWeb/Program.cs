@@ -14,6 +14,8 @@ builder.Services.AddRazorComponents()
 var supabaseOptions = builder.Configuration
     .GetSection(AudioWeb.Client.Configuration.SupabaseOptions.SectionName)
     .Get<AudioWeb.Client.Configuration.SupabaseOptions>();
+if (supabaseOptions == null)
+    throw new InvalidOperationException("Configuração 'Supabase' não encontrada no appsettings.json.");
 builder.Services.AddScoped(sp => new AudioWeb.Client.Services.SupabaseService(supabaseOptions!));
 
 var app = builder.Build();
