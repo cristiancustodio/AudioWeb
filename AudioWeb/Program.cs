@@ -1,6 +1,8 @@
 using MudBlazor.Services;
 using AudioWeb.Client.Pages;
 using AudioWeb.Components;
+using AudioWeb.Models;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,6 +19,10 @@ var supabaseOptions = builder.Configuration
 if (supabaseOptions == null)
     throw new InvalidOperationException("Configuração 'Supabase' não encontrada no appsettings.json.");
 builder.Services.AddScoped(sp => new AudioWeb.Client.Services.SupabaseService(supabaseOptions!));
+
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseNpgsql(connectionString));
 
 var app = builder.Build();
 

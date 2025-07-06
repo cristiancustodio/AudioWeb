@@ -1,6 +1,8 @@
 @page "/audiometers"
 @using AudioWeb.Client.Pages.Dialogs
+@using AudioWeb.Client.Services
 @inject IDialogService DialogService
+@inject SupabaseService SupabaseService
 
 <MudContainer MaxWidth="MaxWidth.Large" Class="py-16">
     <MudPaper Class="pa-8" Elevation="8" Style="border-radius: 16px;">
@@ -152,29 +154,12 @@
 
     protected override async Task OnInitializedAsync()
     {
-        await LoadSampleData();
+        audiometers = await SupabaseService.GetAudiometrosAsync();
     }
 
     private async Task LoadSampleData()
     {
-        // Dados de exemplo
-        audiometers = new List<AudiometerModel>
-        {
-            new() {
-                Id = 1,
-                Description = "Audiômetro Principal - Sala 1",
-                CalibrationDate = new DateTime(2024, 1, 15),
-                MeasurementDate = new DateTime(2024, 3, 10)
-            },
-            new() {
-                Id = 2,
-                Description = "Audiômetro Secundário - Sala 2",
-                CalibrationDate = new DateTime(2023, 11, 20),
-                MeasurementDate = new DateTime(2024, 2, 5)
-            }
-        };
-
-        await Task.Delay(0);
+        audiometers = await SupabaseService.GetAudiometrosAsync();
     }
 
     private async Task OpenCreateDialog()
@@ -188,9 +173,12 @@
         var result = await dialog.Result;
         if (result != null && !result.Canceled && result.Data is AudiometerModel novo)
         {
-            novo.Id = audiometers.Any() ? audiometers.Max(a => a.Id) + 1 : 1;
-            audiometers.Add(novo);
-            StateHasChanged();
+            var inserted = await SupabaseService.InsertAudiometroAsync(novo);
+            if (inserted != null)
+            {
+                audiometers.Add(inserted);
+                StateHasChanged();
+            }
         }
     }
 
@@ -209,12 +197,16 @@
         };
         var dialog = await DialogService.ShowAsync<AudiometerEditDialog>("Editar Audiômetro", parameters);
         var result = await dialog.Result;
-        if (result != null && result != null && !result.Canceled && result.Data is AudiometerModel editado)
+        if (result != null && !result.Canceled && result.Data is AudiometerModel editado)
         {
-            var index = audiometers.FindIndex(a => a.Id == editado.Id);
-            if (index >= 0)
-                audiometers[index] = editado;
-            StateHasChanged();
+            var ok = await SupabaseService.UpdateAudiometroAsync(editado);
+            if (ok)
+            {
+                var index = audiometers.FindIndex(a => a.Id == editado.Id);
+                if (index >= 0)
+                    audiometers[index] = editado;
+                StateHasChanged();
+            }
         }
     }
 
@@ -228,8 +220,12 @@
         var result = await dialog.Result;
         if (result != null && !result.Canceled && result.Data is bool ok && ok)
         {
-            audiometers.Remove(audiometer);
-            StateHasChanged();
+            var deleted = await SupabaseService.DeleteAudiometroAsync(audiometer.Id);
+            if (deleted)
+            {
+                audiometers.Remove(audiometer);
+                StateHasChanged();
+            }
         }
     }
 
