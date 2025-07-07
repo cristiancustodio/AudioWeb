@@ -1,4 +1,4 @@
-using AudioWeb.Client.Models;
+using AudioWeb.Shared.Models;
 using AudioWeb.Shared.Entities;
 
 namespace AudioWeb.Client.Services
@@ -72,52 +72,52 @@ namespace AudioWeb.Client.Services
 
     public partial class SupabaseService
     {
-        public async Task<List<AudiometerModel>> GetAudiometrosAsync()
+        public async Task<List<AudiometroModel>> GetAudiometrosAsync()
         {
             Console.WriteLine($"[SupabaseService] GetAudiometrosAsync - URL: '{_client.ToString()}'");
             await _client.InitializeAsync();
             var result = await _client.From<AudiometroEntity>().Get();
-            return result.Models.Select(e => new AudiometerModel
+            return result.Models.Select(e => new AudiometroModel
             {
                 Id = e.Id,
-                Description = e.Description,
-                CalibrationDate = e.CalibrationDate,
-                MeasurementDate = e.MeasurementDate
+                Descricao = e.Descricao,
+                DataCalibracao = e.DataCalibracao,
+                DataAfericao = e.DataAfericao
             }).ToList();
         }
 
-        public async Task<AudiometerModel?> InsertAudiometroAsync(AudiometerModel model)
+        public async Task<AudiometroModel?> InsertAudiometroAsync(AudiometroModel model)
         {
             Console.WriteLine($"[SupabaseService] InsertAudiometroAsync - URL: '{_client.ToString()}'");
             await _client.InitializeAsync();
             var entity = new AudiometroEntity
             {
-                Description = model.Description,
-                CalibrationDate = model.CalibrationDate,
-                MeasurementDate = model.MeasurementDate
+                Descricao = model.Descricao,
+                DataCalibracao = model.DataCalibracao,
+                DataAfericao = model.DataAfericao
             };
             var inserted = await _client.From<AudiometroEntity>().Insert(entity);
             var first = inserted.Models.FirstOrDefault();
             if (first == null) return null;
-            return new AudiometerModel
+            return new AudiometroModel
             {
                 Id = first.Id,
-                Description = first.Description,
-                CalibrationDate = first.CalibrationDate,
-                MeasurementDate = first.MeasurementDate
+                Descricao = first.Descricao,
+                DataCalibracao = first.DataCalibracao,
+                DataAfericao = first.DataAfericao
             };
         }
 
-        public async Task<bool> UpdateAudiometroAsync(AudiometerModel model)
+        public async Task<bool> UpdateAudiometroAsync(AudiometroModel model)
         {
             Console.WriteLine($"[SupabaseService] UpdateAudiometroAsync - URL: '{_client.ToString()}'");
             await _client.InitializeAsync();
             var entity = new AudiometroEntity
             {
                 Id = model.Id,
-                Description = model.Description,
-                CalibrationDate = model.CalibrationDate,
-                MeasurementDate = model.MeasurementDate
+                Descricao = model.Descricao,
+                DataCalibracao = model.DataCalibracao,
+                DataAfericao = model.DataAfericao
             };
             var updated = await _client.From<AudiometroEntity>().Update(entity);
             return updated.Models.Any();

@@ -1,5 +1,5 @@
 using Microsoft.EntityFrameworkCore;
-using AudioWeb.Client.Models;
+using AudioWeb.Shared.Models;
 
 namespace AudioWeb.Models
 {
@@ -7,6 +7,6 @@ namespace AudioWeb.Models
     {
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
-        public DbSet<AudiometerModel> Audiometros { get; set; }
+        public DbSet<AudiometroModel> Audiometros { get; set; }
     }
 }

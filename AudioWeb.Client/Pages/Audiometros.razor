@@ -1,6 +1,7 @@
 @page "/audiometers"
 @using AudioWeb.Client.Pages.Dialogs
 @using AudioWeb.Client.Services
+@using AudioWeb.Shared.Models
 @inject IDialogService DialogService
 @inject SupabaseService SupabaseService
 @inject ISnackbar Snackbar
@@ -16,6 +17,7 @@
             </MudText>
             <MudText Typo="Typo.body1" Align="Align.Center" Color="Color.Secondary" Class="mb-4">
                 Controle e manutenção dos audiômetros do sistema
+
             </MudText>
             <MudDivider />
         </MudStack>
@@ -30,7 +32,7 @@
 
         <!-- Audiometers List -->
         <MudGrid Spacing="4">
-            @foreach (var audiometer in audiometers)
+            @foreach (var audiometro in audiometros)
             {
                 <MudItem xs="12" md="6">
                     <MudCard Class="pa-4" Elevation="4" Style="border-radius: 12px;">
@@ -41,16 +43,16 @@
                                     <MudIcon Icon="@Icons.Material.Filled.Hearing" Color="Color.Primary"
                                         Size="Size.Medium" />
                                     <MudText Typo="Typo.h6" Class="fw-bold">
-                                        @audiometer.Description
+                                        @audiometro.Descricao
                                     </MudText>
                                 </MudStack>
 
                                 <!-- Ações -->
                                 <MudButtonGroup Variant="Variant.Text" Size="Size.Small">
                                     <MudIconButton Icon="@Icons.Material.Filled.Edit" Color="Color.Warning" title="Editar"
-                                        OnClick="() => EditAudiometer(audiometer)" />
+                                        OnClick="() => EditAudiometer(audiometro)" />
                                     <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error" title="Excluir"
-                                        OnClick="() => DeleteAudiometer(audiometer)" />
+                                        OnClick="() => DeleteAudiometer(audiometro)" />
                                 </MudButtonGroup>
                             </MudStack>
 
@@ -65,14 +67,14 @@
                                                 Class="mr-1" />
                                             Calibração
                                         </MudText>
-                                        @if (audiometer.CalibrationDate.HasValue)
+                                        @if (audiometro.DataCalibracao.HasValue)
                                         {
                                             <MudText Typo="Typo.body2" Class="fw-bold">
-                                                @audiometer.CalibrationDate.Value.ToString("dd/MM/yyyy")
+                                                @audiometro.DataCalibracao.Value.ToString("dd/MM/yyyy")
                                             </MudText>
                                             <MudText Typo="Typo.caption"
-                                                Color="@GetDateStatusColor(audiometer.CalibrationDate.Value)">
-                                                @GetDateStatus(audiometer.CalibrationDate.Value)
+                                                Color="@GetDateStatusColor(audiometro.DataCalibracao.Value)">
+                                                @GetDateStatus(audiometro.DataCalibracao.Value)
                                             </MudText>
                                         }
                                         else
@@ -91,14 +93,14 @@
                                                 Class="mr-1" />
                                             Aferição
                                         </MudText>
-                                        @if (audiometer.MeasurementDate.HasValue)
+                                        @if (audiometro.DataAfericao.HasValue)
                                         {
                                             <MudText Typo="Typo.body2" Class="fw-bold">
-                                                @audiometer.MeasurementDate.Value.ToString("dd/MM/yyyy")
+                                                @audiometro.DataAfericao.Value.ToString("dd/MM/yyyy")
                                             </MudText>
                                             <MudText Typo="Typo.caption"
-                                                Color="@GetDateStatusColor(audiometer.MeasurementDate.Value)">
-                                                @GetDateStatus(audiometer.MeasurementDate.Value)
+                                                Color="@GetDateStatusColor(audiometro.DataAfericao.Value)">
+                                                @GetDateStatus(audiometro.DataAfericao.Value)
                                             </MudText>
                                         }
                                         else
@@ -112,8 +114,8 @@
                             </MudGrid>
 
                             <!-- Status Geral -->
-                            <MudChip T="string" Text="@GetOverallStatus(audiometer)"
-                                Color="@GetOverallStatusColor(audiometer)" Size="Size.Small"
+                            <MudChip T="string" Text="@GetOverallStatus(audiometro)"
+                                Color="@GetOverallStatusColor(audiometro)" Size="Size.Small"
                                 Style="align-self: flex-start;" />
                         </MudStack>
                     </MudCard>
@@ -122,7 +124,7 @@
         </MudGrid>
 
         <!-- Empty State -->
-        @if (!audiometers.Any())
+        @if (!audiometros.Any())
 
         {
             <MudStack AlignItems="AlignItems.Center" Spacing="4" Class="pa-8">
@@ -149,36 +151,36 @@
 </MudContainer>
 
 @code {
-    private List<AudiometerModel> audiometers = new();
-    private AudiometerModel currentAudiometer = new();
-    private AudiometerModel audiometerToDelete = new();
+    private List<AudiometroModel> audiometros = new();
+    private AudiometroModel currentAudiometro = new();
+    private AudiometroModel audiometroToDelete = new();
 
 
     protected override async Task OnInitializedAsync()
     {
-        audiometers = await SupabaseService.GetAudiometrosAsync();
+        audiometros = await SupabaseService.GetAudiometrosAsync();
     }
 
     private async Task LoadSampleData()
     {
-        audiometers = await SupabaseService.GetAudiometrosAsync();
+        audiometros = await SupabaseService.GetAudiometrosAsync();
     }
 
     private async Task OpenCreateDialog()
     {
         var parameters = new DialogParameters
         {
-            [nameof(AudiometerEditDialog.Audiometer)] = new AudiometerModel(),
-            [nameof(AudiometerEditDialog.IsEditing)] = false
+            [nameof(AudiometroEditDialog.Audiometro)] = new AudiometroModel(),
+            [nameof(AudiometroEditDialog.IsEditing)] = false
         };
-        var dialog = await DialogService.ShowAsync<AudiometerEditDialog>("Novo Audiômetro", parameters);
+        var dialog = await DialogService.ShowAsync<AudiometroEditDialog>("Novo Audiômetro", parameters);
         var result = await dialog.Result;
-        if (result != null && !result.Canceled && result.Data is AudiometerModel novo)
+        if (result != null && !result.Canceled && result.Data is AudiometroModel novo)
         {
             var inserted = await SupabaseService.InsertAudiometroAsync(novo);
             if (inserted != null)
             {
-                audiometers.Add(inserted);
+                audiometros.Add(inserted);
 
                 NotifyStatus("Audiômetro incluído com sucesso", Severity.Info);
 
@@ -187,29 +189,29 @@
         }
     }
 
-    private async Task EditAudiometer(AudiometerModel audiometer)
+    private async Task EditAudiometer(AudiometroModel audiometro)
     {
         var parameters = new DialogParameters
         {
-            [nameof(AudiometerEditDialog.Audiometer)] = new AudiometerModel
+            [nameof(AudiometroEditDialog.Audiometro)] = new AudiometroModel
             {
-                Id = audiometer.Id,
-                Description = audiometer.Description,
-                CalibrationDate = audiometer.CalibrationDate,
-                MeasurementDate = audiometer.MeasurementDate
+                Id = audiometro.Id,
+                Descricao = audiometro.Descricao,
+                DataCalibracao = audiometro.DataCalibracao,
+                DataAfericao = audiometro.DataAfericao
             },
-            [nameof(AudiometerEditDialog.IsEditing)] = true
+            [nameof(AudiometroEditDialog.IsEditing)] = true
         };
-        var dialog = await DialogService.ShowAsync<AudiometerEditDialog>("Editar Audiômetro", parameters);
+        var dialog = await DialogService.ShowAsync<AudiometroEditDialog>("Editar Audiômetro", parameters);
         var result = await dialog.Result;
-        if (result != null && !result.Canceled && result.Data is AudiometerModel editado)
+        if (result != null && !result.Canceled && result.Data is AudiometroModel editado)
         {
             var ok = await SupabaseService.UpdateAudiometroAsync(editado);
             if (ok)
             {
-                var index = audiometers.FindIndex(a => a.Id == editado.Id);
+                var index = audiometros.FindIndex(a => a.Id == editado.Id);
                 if (index >= 0)
-                    audiometers[index] = editado;
+                    audiometros[index] = editado;
 
                 NotifyStatus("Audiômetro alterado com sucesso", Severity.Info);
                 StateHasChanged();
@@ -217,20 +219,20 @@
         }
     }
 
-    private async Task DeleteAudiometer(AudiometerModel audiometer)
+    private async Task DeleteAudiometer(AudiometroModel audiometro)
     {
         var parameters = new DialogParameters
         {
-            [nameof(DeleteAudiometerDialog.AudiometerDescription)] = audiometer.Description
+            [nameof(DeleteAudiometroDialog.AudiometerDescription)] = audiometro.Descricao
         };
-        var dialog = await DialogService.ShowAsync<DeleteAudiometerDialog>("Confirmar Exclusão", parameters);
+        var dialog = await DialogService.ShowAsync<DeleteAudiometroDialog>("Confirmar Exclusão", parameters);
         var result = await dialog.Result;
         if (result != null && !result.Canceled && result.Data is bool ok && ok)
         {
-            var deleted = await SupabaseService.DeleteAudiometroAsync(audiometer.Id);
+            var deleted = await SupabaseService.DeleteAudiometroAsync(audiometro.Id);
             if (deleted)
             {
-                audiometers.Remove(audiometer);
+                audiometros.Remove(audiometro);
 
                 NotifyStatus("Audiômetro excluído com sucesso", Severity.Info);
 

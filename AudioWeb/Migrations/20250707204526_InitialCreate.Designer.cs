@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace AudioWeb.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250706163400_CreateAudiometerTable")]
-    partial class CreateAudiometerTable
+    [Migration("20250707204526_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -25,7 +25,7 @@ namespace AudioWeb.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("AudioWeb.Models.AudiometerModel", b =>
+            modelBuilder.Entity("AudioWeb.Shared.Models.AudiometroModel", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -33,15 +33,15 @@ namespace AudioWeb.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime>("CalibrationDate")
+                    b.Property<DateTime?>("DataAfericao")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("Description")
+                    b.Property<DateTime?>("DataCalibracao")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Descricao")
                         .IsRequired()
                         .HasColumnType("text");
-
-                    b.Property<DateTime>("MeasurementDate")
-                        .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
 

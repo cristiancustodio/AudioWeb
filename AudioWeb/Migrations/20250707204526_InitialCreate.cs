@@ -7,7 +7,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace AudioWeb.Migrations
 {
     /// <inheritdoc />
-    public partial class CreateAudiometerTable : Migration
+    public partial class InitialCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -18,9 +18,9 @@ namespace AudioWeb.Migrations
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Description = table.Column<string>(type: "text", nullable: false),
-                    CalibrationDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    MeasurementDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                    Descricao = table.Column<string>(type: "text", nullable: false),
+                    DataCalibracao = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    DataAfericao = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
                 },
                 constraints: table =>
                 {

@@ -11,11 +11,11 @@ namespace AudioWeb.Shared.Entities
     {
         [PrimaryKey("Id", false)]
         public int Id { get; set; }
-        [Column("Description")]
-        public string Description { get; set; } = string.Empty;
-        [Column("CalibrationDate")]
-        public DateTime? CalibrationDate { get; set; }
-        [Column("MeasurementDate")]
-        public DateTime? MeasurementDate { get; set; }
+        [Column("Descricao")]
+        public string Descricao { get; set; } = string.Empty;
+        [Column("DataCalibracao")]
+        public DateTime? DataCalibracao { get; set; }
+        [Column("DataAfericao")]
+        public DateTime? DataAfericao { get; set; }
     }
 }
