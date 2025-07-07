@@ -18,11 +18,11 @@
                 <MudDatePicker @bind-Date="Audiometer.CalibrationDate" Label="Data de Calibração"
                     Variant="Variant.Outlined" Adornment="Adornment.Start"
                     AdornmentIcon="@Icons.Material.Filled.BuildCircle" HelperText="Data da última calibração"
-                    MaxDate="DateTime.Today" />
+                    Required="true" RequiredError="A data de calibração é obrigatória"  MaxDate="DateTime.Today" />
                 <MudDatePicker @bind-Date="Audiometer.MeasurementDate" Label="Data de Aferição"
                     Variant="Variant.Outlined" Adornment="Adornment.Start"
                     AdornmentIcon="@Icons.Material.Filled.FactCheck" HelperText="Data da última aferição"
-                    MaxDate="DateTime.Today" />
+                    Required="true" RequiredError="A data de aferição é obrigatória" MaxDate="DateTime.Today" />
             </MudStack>
         </MudForm>
     </DialogContent>

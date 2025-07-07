@@ -151,7 +151,7 @@
 @code {
     private List<AudiometerModel> audiometers = new();
     private AudiometerModel currentAudiometer = new();
-    private AudiometerModel audiometerToDelete = new();    
+    private AudiometerModel audiometerToDelete = new();
 
 
     protected override async Task OnInitializedAsync()
@@ -180,13 +180,7 @@
             {
                 audiometers.Add(inserted);
 
-                var config = (SnackbarOptions options) =>
-                {
-                    options.VisibleStateDuration = 5000;
-                    options.DuplicatesBehavior = SnackbarDuplicatesBehavior.Prevent;
-                    options.ShowCloseIcon = false;
-                };                 
-                Snackbar.Add("Audiômetro incluído com sucesso", Severity.Info, config, inserted.Description );
+                NotifyStatus("Audiômetro incluído com sucesso", Severity.Info);
 
                 StateHasChanged();
             }
@@ -217,14 +211,7 @@
                 if (index >= 0)
                     audiometers[index] = editado;
 
-                var config = (SnackbarOptions options) =>
-                {
-                    options.VisibleStateDuration = 5000;
-                    options.DuplicatesBehavior = SnackbarDuplicatesBehavior.Prevent;
-                    options.ShowCloseIcon = false;
-                };                    
-                Snackbar.Configuration.PositionClass = Defaults.Classes.Position.BottomCenter;
-                Snackbar.Add("Audiômetro alterado com sucesso", Severity.Info, config, editado.Description );
+                NotifyStatus("Audiômetro alterado com sucesso", Severity.Info);
                 StateHasChanged();
             }
         }
@@ -245,18 +232,30 @@
             {
                 audiometers.Remove(audiometer);
 
-                //TODO: Refatorar
-                var config = (SnackbarOptions options) =>
-                {
-                    options.VisibleStateDuration = 5000;
-                    options.DuplicatesBehavior = SnackbarDuplicatesBehavior.Prevent;
-                    options.ShowCloseIcon = false;
-                };                 
-                Snackbar.Add("Audiômetro excluído com sucesso", Severity.Info, config, audiometer.Description );
+                NotifyStatus("Audiômetro excluído com sucesso", Severity.Info);
 
                 StateHasChanged();
             }
+            else
+            {
+                NotifyStatus("Erro ao excluir audiômetro", Severity.Error);
+            }
         }
     }
- 
+
+    private void NotifyStatus(string msg, Severity severity)
+    {
+        var config = (SnackbarOptions options) =>
+        {
+            options.VisibleStateDuration = 5000;
+            options.DuplicatesBehavior = SnackbarDuplicatesBehavior.Prevent;
+            options.ShowCloseIcon = false;
+        };
+
+        Snackbar.Configuration.PositionClass = Defaults.Classes.Position.BottomCenter;
+
+        Snackbar.Add(msg, severity, config);
+
+    }
+
 }
