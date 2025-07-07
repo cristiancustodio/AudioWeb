@@ -3,6 +3,7 @@
 @using AudioWeb.Client.Services
 @inject IDialogService DialogService
 @inject SupabaseService SupabaseService
+@inject ISnackbar Snackbar
 
 <MudContainer MaxWidth="MaxWidth.Large" Class="py-16">
     <MudPaper Class="pa-8" Elevation="8" Style="border-radius: 16px;">
@@ -122,6 +123,7 @@
 
         <!-- Empty State -->
         @if (!audiometers.Any())
+
         {
             <MudStack AlignItems="AlignItems.Center" Spacing="4" Class="pa-8">
                 <MudIcon Icon="@Icons.Material.Filled.HearingDisabled" Size="Size.Large" Color="Color.Secondary" />
@@ -177,6 +179,15 @@
             if (inserted != null)
             {
                 audiometers.Add(inserted);
+
+                var config = (SnackbarOptions options) =>
+                {
+                    options.VisibleStateDuration = 5000;
+                    options.DuplicatesBehavior = SnackbarDuplicatesBehavior.Prevent;
+                    options.ShowCloseIcon = false;
+                };                 
+                Snackbar.Add("Audiômetro incluído com sucesso", Severity.Info, config, inserted.Description );
+
                 StateHasChanged();
             }
         }
@@ -205,6 +216,15 @@
                 var index = audiometers.FindIndex(a => a.Id == editado.Id);
                 if (index >= 0)
                     audiometers[index] = editado;
+
+                var config = (SnackbarOptions options) =>
+                {
+                    options.VisibleStateDuration = 5000;
+                    options.DuplicatesBehavior = SnackbarDuplicatesBehavior.Prevent;
+                    options.ShowCloseIcon = false;
+                };                    
+                Snackbar.Configuration.PositionClass = Defaults.Classes.Position.BottomCenter;
+                Snackbar.Add("Audiômetro alterado com sucesso", Severity.Info, config, editado.Description );
                 StateHasChanged();
             }
         }
@@ -224,9 +244,19 @@
             if (deleted)
             {
                 audiometers.Remove(audiometer);
+
+                //TODO: Refatorar
+                var config = (SnackbarOptions options) =>
+                {
+                    options.VisibleStateDuration = 5000;
+                    options.DuplicatesBehavior = SnackbarDuplicatesBehavior.Prevent;
+                    options.ShowCloseIcon = false;
+                };                 
+                Snackbar.Add("Audiômetro excluído com sucesso", Severity.Info, config, audiometer.Description );
+
                 StateHasChanged();
             }
         }
     }
-
+ 
 }
