@@ -161,11 +161,6 @@
         audiometros = await SupabaseService.GetAudiometrosAsync();
     }
 
-    private async Task LoadSampleData()
-    {
-        audiometros = await SupabaseService.GetAudiometrosAsync();
-    }
-
     private async Task OpenCreateDialog()
     {
         var parameters = new DialogParameters
@@ -247,6 +242,7 @@
 
     private void NotifyStatus(string msg, Severity severity)
     {
+        
         var config = (SnackbarOptions options) =>
         {
             options.VisibleStateDuration = 5000;

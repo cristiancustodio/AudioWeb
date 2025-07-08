@@ -12,8 +12,8 @@ namespace AudioWeb.Client.Services
             var url = options.Url;
             var key = options.Anon_Key;
 
-            Console.WriteLine($"[SupabaseService] URL carregada: '{url}'");
-            Console.WriteLine($"[SupabaseService] Anon_Key está {(string.IsNullOrWhiteSpace(key) ? "vazio" : "preenchido")}");
+            //Console.WriteLine($"[SupabaseService] URL carregada: '{url}'");
+            //Console.WriteLine($"[SupabaseService] Anon_Key está {(string.IsNullOrWhiteSpace(key) ? "vazio" : "preenchido")}");
             if (string.IsNullOrWhiteSpace(url) || string.IsNullOrWhiteSpace(key))
                 throw new InvalidOperationException($"Configuração Supabase inválida. Url='{url}', Anon_Key preenchido: {!string.IsNullOrWhiteSpace(key)}");
 
