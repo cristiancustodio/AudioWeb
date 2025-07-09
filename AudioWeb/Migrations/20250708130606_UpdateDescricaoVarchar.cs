@@ -34,4 +34,3 @@ namespace AudioWeb.Migrations
         }
     }
 }
-dotnet ef database updategit
