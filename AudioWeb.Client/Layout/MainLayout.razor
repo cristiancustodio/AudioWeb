@@ -8,6 +8,9 @@
     <MudDrawer @bind-Open="@_open" Anchor="Anchor.Left" Elevation="2" Variant="@DrawerVariant.Mini" OpenMiniOnHover="false">
         <NavMenuLeft OnMessageFromChild="DrawerToggle" />
     </MudDrawer>  
+    <MudDrawer Anchor="Anchor.Right" Elevation="2" Variant="@DrawerVariant.Mini" OpenMiniOnHover="false">
+        <NavMenuRight/>
+    </MudDrawer>      
     <MudMainContent Class="pt-2 pa-2">
         @Body
     </MudMainContent>

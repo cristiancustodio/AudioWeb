@@ -1,4 +1,5 @@
 @using MudBlazor
+@using AudioWeb.Shared.Models
 
 
 <MudDialog>
@@ -11,15 +12,15 @@
     <DialogContent>
         <MudForm @ref="Form" @onsubmit="OnValidSubmit">
             <MudStack Spacing="4">
-                <MudTextField T="string" @bind-Value="Audiometer.Description" Label="Descrição do Audiômetro"
+                <MudTextField T="string" @bind-Value="Audiometro.Descricao" Label="Descrição do Audiômetro"
                     Required="true" RequiredError="A descrição é obrigatória" Counter="40" MaxLength="40"
                     Variant="Variant.Outlined" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Label"
                     HelperText="Máximo 40 caracteres" />
-                <MudDatePicker @bind-Date="Audiometer.CalibrationDate" Label="Data de Calibração"
+                <MudDatePicker @bind-Date="Audiometro.DataCalibracao" Label="Data de Calibração"
                     Variant="Variant.Outlined" Adornment="Adornment.Start"
                     AdornmentIcon="@Icons.Material.Filled.BuildCircle" HelperText="Data da última calibração"
                     MaxDate="DateTime.Today" />
-                <MudDatePicker @bind-Date="Audiometer.MeasurementDate" Label="Data de Aferição"
+                <MudDatePicker @bind-Date="Audiometro.DataAfericao" Label="Data de Aferição"
                     Variant="Variant.Outlined" Adornment="Adornment.Start"
                     AdornmentIcon="@Icons.Material.Filled.FactCheck" HelperText="Data da última aferição"
                     MaxDate="DateTime.Today" />
@@ -39,7 +40,7 @@
 
 @code {
     [CascadingParameter] IMudDialogInstance? MudDialog { get; set; }
-    [Parameter] public AudiometerModel Audiometer { get; set; } = new();
+    [Parameter] public AudiometroModel Audiometro { get; set; } = new();
     [Parameter] public bool IsEditing { get; set; }
     protected MudForm? Form;
 
@@ -50,7 +51,7 @@
             await Form.Validate();
             if (Form.IsValid)
             {
-                MudDialog?.Close(DialogResult.Ok(Audiometer));
+                MudDialog?.Close(DialogResult.Ok(Audiometro));
             }
         }
 

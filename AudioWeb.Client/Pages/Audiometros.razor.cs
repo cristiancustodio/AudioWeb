@@ -1,5 +1,5 @@
 using MudBlazor;
-using AudioWeb.Client.Models;
+using AudioWeb.Shared.Models;
 
 namespace AudioWeb.Client.Pages;
 
@@ -28,13 +28,13 @@ public partial class Audiometros
         };
     }
 
-    private string GetOverallStatus(AudiometerModel audiometer)
+    private string GetOverallStatus(AudiometroModel audiometro)
     {
-        if (!audiometer.CalibrationDate.HasValue && !audiometer.MeasurementDate.HasValue)
+        if (!audiometro.DataCalibracao.HasValue && !audiometro.DataAfericao.HasValue)
             return "Pendente Configuração";
 
 #pragma warning disable CS8629 // Nullable value type may be null.
-        var oldestDate = new[] { audiometer.CalibrationDate, audiometer.MeasurementDate }
+        var oldestDate = new[] { audiometro.DataCalibracao, audiometro.DataAfericao }
             .Where(d => d.HasValue)
             .Select(d => d.Value!)
             .DefaultIfEmpty(DateTime.MinValue)
@@ -52,9 +52,9 @@ public partial class Audiometros
         };
     }
 
-    private Color GetOverallStatusColor(AudiometerModel audiometer)
+    private Color GetOverallStatusColor(AudiometroModel audiometro)
     {
-        var status = GetOverallStatus(audiometer);
+        var status = GetOverallStatus(audiometro);
         return status switch
         {
             "Em Dia" => Color.Success,
