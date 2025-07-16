@@ -1,0 +1,13 @@
+@inject MudBlazor.IDialogService DialogService
+
+private async Task OpenCreateUserDialog()
+{
+    var options = new DialogOptions { CloseOnEscapeKey = true };
+    var dialog = DialogService.Show<CreateUserDialog>("Criar Novo Usuário", options);
+    var result = await dialog.Result;
+
+    if (!result.Canceled && (bool)result.Data)
+    {
+        await LoadUsers(); // Recarrega a lista de usuários após a criação bem-sucedida
+    }
+}

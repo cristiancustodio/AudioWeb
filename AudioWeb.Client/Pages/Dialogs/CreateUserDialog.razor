@@ -1,0 +1,95 @@
+@using AudioWeb.Shared.Models
+@using System.Net.Http.Json
+@inject HttpClient Http
+@inject ISnackbar Snackbar
+@inject MudDialogInstance MudDialog
+
+<MudDialog>
+    <TitleContent>
+        <MudText Typo="Typo.h6">
+            <MudIcon Icon="@Icons.Material.Filled.PersonAdd" Class="mr-3" /> Criar Novo Usuário
+        </MudText>
+    </TitleContent>
+    <DialogContent>
+        <MudForm @ref="form" Model="@model" @bind-IsValid="@success" @bind-Errors="@errors">
+            <MudTextField @bind-Value="model.Email" Label="Email" Variant="Variant.Outlined" Required="true" RequiredError="Email é obrigatório!" />
+            <MudTextField @bind-Value="model.Password" Label="Senha" Variant="Variant.Outlined" InputType="InputType.Password" Required="true" RequiredError="Senha é obrigatória!" />
+            <MudTextField @bind-Value="model.NomeCompleto" Label="Nome Completo" Variant="Variant.Outlined" />
+
+            <MudSelect T="string" Label="Papel" @bind-Value="model.SelectedRole" Required="true" RequiredError="Selecione um papel!">
+                @foreach (var role in availableRoles)
+                {
+                    <MudSelectItem Value="@role.Name">@role.Name</MudSelectItem>
+                }
+            </MudSelect>
+        </MudForm>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancelar</MudButton>
+        <MudButton Color="Color.Primary" OnClick="Submit" Disabled="@(!success)">Criar</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+
+    private CreateUserRequest model = new();
+    private MudForm form;
+    private bool success;
+    private string[] errors = { };
+    private List<RoleDto> availableRoles = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadRoles();
+    }
+
+    private async Task LoadRoles()
+    {
+        try
+        {
+            availableRoles = await Http.GetFromJsonAsync<List<RoleDto>>("api/admin/roles");
+        }
+        catch (AccessTokenNotAvailableException exception)
+        {
+            exception.Redirect();
+        }
+        catch (HttpRequestException ex)
+        {
+            Snackbar.Add($"Erro ao carregar papéis: {ex.Message}", Severity.Error);
+            MudDialog.Cancel();
+        }
+    }
+
+    private async Task Submit()
+    {
+        await form.Validate();
+        if (success)
+        {
+            try
+            {
+                var response = await Http.PostAsJsonAsync("api/admin/create-user", model);
+                if (response.IsSuccessStatusCode)
+                {
+                    Snackbar.Add("Usuário criado com sucesso!", Severity.Success);
+                    MudDialog.Close(DialogResult.Ok(true));
+                }
+                else
+                {
+                    var errorContent = await response.Content.ReadAsStringAsync();
+                    Snackbar.Add($"Erro ao criar usuário: {response.StatusCode} - {errorContent}", Severity.Error);
+                }
+            }
+            catch (AccessTokenNotAvailableException exception)
+            {
+                exception.Redirect();
+            }
+            catch (HttpRequestException ex)
+            {
+                Snackbar.Add($"Erro de rede ao criar usuário: {ex.Message}", Severity.Error);
+            }
+        }
+    }
+
+    private void Cancel() => MudDialog.Cancel();
+}

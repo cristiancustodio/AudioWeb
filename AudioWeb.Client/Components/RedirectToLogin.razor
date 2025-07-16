@@ -1,0 +1,35 @@
+@inject NavigationManager Navigation
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+
+@code {
+    protected override void OnInitialized()
+    {
+        Navigation.NavigateTo($"authentication/login?returnUrl={Uri.EscapeDataString(Navigation.Uri)}");
+    }
+}
+
+@* WebAudio.Client/Shared/LoginDisplay.razor *@
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+
+@inject NavigationManager Navigation
+@inject SignOutSessionStateManager SignOutManager
+
+<AuthorizeView>
+    <Authorized>
+        Olá, @context.User.Identity?.Name!
+        <button class="nav-link btn btn-link" @onclick="BeginSignOut">Sair</button>
+    </Authorized>
+    <NotAuthorized>
+        <a href="authentication/register">Registrar</a>
+        <a href="authentication/login">Login</a>
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+    private async Task BeginSignOut()
+    {
+        await SignOutManager.Set='stateAsync();
+        Navigation.NavigateTo("authentication/logout");
+    }
+}

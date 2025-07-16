@@ -1,0 +1,94 @@
+// WebAudio.Client/Pages/Admin/UserManagement.razor
+@page "/admin/users"
+@using AudioWeb.Shared.Models
+@using System.Net.Http.Json
+@attribute [Authorize(Roles = "Administrador")] @* Protege a página no lado do cliente *@
+
+@inject HttpClient Http
+@inject ISnackbar Snackbar
+
+<MudText Typo="Typo.h4" Class="mb-4">Gerenciamento de Usuários</MudText>
+
+<MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="OpenCreateUserDialog">
+    <MudIcon Icon="@Icons.Material.Filled.Add" Class="mr-2" /> Novo Usuário
+</MudButton>
+
+@if (users == null)
+{
+    <MudProgressCircular Indeterminate="true" Class="mt-4" />
+    <MudText Class="mt-2">Carregando usuários...</MudText>
+}
+else
+{
+    <MudTable Items="@users" Dense="true" Hover="true" Bordered="true" Striped="true" Class="mt-4">
+        <HeaderContent>
+            <MudTh>ID</MudTh>
+            <MudTh>Email</MudTh>
+            <MudTh>Nome Completo</MudTh>
+            <MudTh>Papéis</MudTh>
+            <MudTh>Ações</MudTh>
+        </HeaderContent>
+        <RowTemplate Context="user">
+            <MudTd DataLabel="ID">@user.Id</MudTd>
+            <MudTd DataLabel="Email">@user.Email</MudTd>
+            <MudTd DataLabel="Nome Completo">@user.NomeCompleto</MudTd>
+            <MudTd DataLabel="Papéis">
+                @foreach (var role in user.Roles)
+                {
+                    <MudChip Size="Size.Small" Color="Color.Primary" Class="mr-1">@role</MudChip>
+                }
+            </MudTd>
+            <MudTd DataLabel="Ações">
+                <MudIconButton Icon="@Icons.Material.Filled.Edit" Size="Size.Small" OnClick="() => OpenEditUserDialog(user)" />
+                <MudIconButton Icon="@Icons.Material.Filled.Delete" Size="Size.Small" Color="Color.Error" OnClick="() => DeleteUser(user)" />
+            </MudTd>
+        </RowTemplate>
+        <PagerContent>
+            <MudTablePager />
+        </PagerContent>
+    </MudTable>
+}
+
+@code {
+    private List<UserDto>? users;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadUsers();
+    }
+
+    private async Task LoadUsers()
+    {
+        try
+        {
+            users = await Http.GetFromJsonAsync<List<UserDto>>("api/admin/users");
+        }
+        catch (AccessTokenNotAvailableException exception)
+        {
+            exception.Redirect();
+        }
+        catch (HttpRequestException ex)
+        {
+            Snackbar.Add($"Erro ao carregar usuários: {ex.Message}", Severity.Error);
+        }
+    }
+
+    // --- Lógica para abrir dialogs de criar/editar ---
+    private void OpenCreateUserDialog()
+    {
+        // Abrir um MudDialog ou navegar para uma página de criação
+        // Exemplo simples com Snackbar
+        Snackbar.Add("Funcionalidade de criar usuário será implementada em um dialog.", Severity.Info);
+        // Ou você pode usar MudDialogService aqui
+    }
+
+    private void OpenEditUserDialog(UserDto user)
+    {
+        Snackbar.Add($"Funcionalidade de editar usuário '{user.Email}' será implementada.", Severity.Info);
+    }
+
+    private void DeleteUser(UserDto user)
+    {
+        Snackbar.Add($"Funcionalidade de deletar usuário '{user.Email}' será implementada.", Severity.Info);
+    }
+}

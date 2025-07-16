@@ -109,4 +109,75 @@ app.MapRazorComponents<App>()
     .AddInteractiveWebAssemblyRenderMode()
     .AddAdditionalAssemblies(typeof(AudioWeb.Client._Imports).Assembly);
 
+
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    try
+    {
+        var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
+        var roleManager = services.GetRequiredService<RoleManager<ApplicationRole>>();
+
+        // --- Criar Papéis se não existirem ---
+        string[] roleNames = { "Administrador", "UsuarioComum" };
+        foreach (var roleName in roleNames)
+        {
+            if (!await roleManager.RoleExistsAsync(roleName))
+            {
+                await roleManager.CreateAsync(new ApplicationRole { Name = roleName, Descricao = $"Papel {roleName}" }); // Adicionei Descricao
+                Console.WriteLine($"Papel '{roleName}' criado com sucesso."); // Feedback no console
+            }
+        }
+
+        // --- Criar um Usuário Administrador Padrão se não existir ---
+        var adminEmail = "admin@seuemail.com"; // Use um email real para o admin
+        var adminUser = await userManager.FindByEmailAsync(adminEmail);
+        if (adminUser == null)
+        {
+            adminUser = new ApplicationUser
+            {
+                UserName = adminEmail,
+                Email = adminEmail,
+                EmailConfirmed = true, // Considere true para evitar confirmação inicial para o admin
+                NomeCompleto = "Administrador do Sistema"
+            };
+            var result = await userManager.CreateAsync(adminUser, "SuaSenhaSegura#123"); // **MUDA ESSA SENHA EM PRODUÇÃO!**
+            if (result.Succeeded)
+            {
+                Console.WriteLine($"Usuário '{adminEmail}' criado com sucesso.");
+                await userManager.AddToRoleAsync(adminUser, "Administrador");
+                Console.WriteLine($"Papel 'Administrador' atribuído a '{adminEmail}'.");
+            }
+            else
+            {
+                Console.WriteLine($"Erro ao criar usuário '{adminEmail}':");
+                foreach (var error in result.Errors)
+                {
+                    Console.WriteLine($"- {error.Description}");
+                }
+            }
+        } else {
+             Console.WriteLine($"Usuário '{adminEmail}' já existe.");
+             // Garante que o papel de administrador está atribuído caso o usuário já exista mas não tenha o papel
+             if (!await userManager.IsInRoleAsync(adminUser, "Administrador"))
+             {
+                 await userManager.AddToRoleAsync(adminUser, "Administrador");
+                 Console.WriteLine($"Papel 'Administrador' atribuído a '{adminEmail}' (usuário existente).");
+             }
+        }
+    }
+    catch (Exception ex)
+    {
+        var logger = services.GetRequiredService<ILogger<Program>>();
+        logger.LogError(ex, "Um erro ocorreu ao semear o banco de dados com dados de usuário e papéis.");
+    }
+}
+
+
 app.Run();
+
+
+
+
+
+
