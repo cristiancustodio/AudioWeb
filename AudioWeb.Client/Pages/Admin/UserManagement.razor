@@ -1,8 +1,8 @@
-// WebAudio.Client/Pages/Admin/UserManagement.razor
 @page "/admin/users"
 @using AudioWeb.Shared.Models
 @using System.Net.Http.Json
-@attribute [Authorize(Roles = "Administrador")] @* Protege a página no lado do cliente *@
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+@attribute [Authorize(Roles = "Administrador")]
 
 @inject HttpClient Http
 @inject ISnackbar Snackbar
@@ -35,7 +35,7 @@ else
             <MudTd DataLabel="Papéis">
                 @foreach (var role in user.Roles)
                 {
-                    <MudChip Size="Size.Small" Color="Color.Primary" Class="mr-1">@role</MudChip>
+                    <MudChip T="string" Size="Size.Small" Color="Color.Primary" Class="mr-1">@role</MudChip>
                 }
             </MudTd>
             <MudTd DataLabel="Ações">

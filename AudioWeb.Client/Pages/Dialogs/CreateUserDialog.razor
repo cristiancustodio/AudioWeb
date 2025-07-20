@@ -1,8 +1,11 @@
 @using AudioWeb.Shared.Models
 @using System.Net.Http.Json
+@using AudioWeb.Client.Pages.Dialogs
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+
 @inject HttpClient Http
 @inject ISnackbar Snackbar
-@inject MudDialogInstance MudDialog
+
 
 <MudDialog>
     <TitleContent>
@@ -31,7 +34,7 @@
 </MudDialog>
 
 @code {
-    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+    [CascadingParameter] IMudDialogInstance? MudDialog { get; set; }
 
     private CreateUserRequest model = new();
     private MudForm form;
