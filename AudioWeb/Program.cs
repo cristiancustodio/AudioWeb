@@ -29,7 +29,7 @@ builder.Services.AddDefaultIdentity<ApplicationUser>(options =>
     // options.Password.RequireDigit = false;
     // options.Password.RequiredLength = 6;
 })
-.AddRoles<ApplicationRole>() // Habilita o uso de papéis com ApplicationRole
+.AddRoles<IdentityRole>() // Habilita o uso de papéis padrão
 .AddEntityFrameworkStores<AppDbContext>(); // Conecta o Identity ao seu DbContext (AppDbContext)
 
 // --- 2. Configuração do IdentityServer para APIs do Blazor WASM ---
@@ -116,7 +116,7 @@ using (var scope = app.Services.CreateScope())
     try
     {
         var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
-        var roleManager = services.GetRequiredService<RoleManager<ApplicationRole>>();
+        var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
 
         // --- Criar Papéis se não existirem ---
         string[] roleNames = { "Administrador", "UsuarioComum" };
@@ -124,8 +124,8 @@ using (var scope = app.Services.CreateScope())
         {
             if (!await roleManager.RoleExistsAsync(roleName))
             {
-                await roleManager.CreateAsync(new ApplicationRole { Name = roleName, Descricao = $"Papel {roleName}" }); // Adicionei Descricao
-                Console.WriteLine($"Papel '{roleName}' criado com sucesso."); // Feedback no console
+                await roleManager.CreateAsync(new IdentityRole { Name = roleName });
+                Console.WriteLine($"Papel '{roleName}' criado com sucesso.");
             }
         }
 

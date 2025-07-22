@@ -8,7 +8,7 @@ using AudioWeb.Shared.Models;
 
 namespace AudioWeb.Data
 {
-    // CORRETO: ApiAuthorizationDbContext precisa de TUser, TRole e TKey
+    // CORRETO: ApiAuthorizationDbContext precisa de TUser
     public class AppDbContext : ApiAuthorizationDbContext<ApplicationUser>
     {
         public AppDbContext(

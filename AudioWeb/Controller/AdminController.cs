@@ -13,9 +13,9 @@ namespace WebAudio.Controllers
     public class AdminController : ControllerBase
     {
         private readonly UserManager<ApplicationUser> _userManager;
-        private readonly RoleManager<ApplicationRole> _roleManager;
+        private readonly RoleManager<IdentityRole> _roleManager;
 
-        public AdminController(UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager)
+        public AdminController(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager)
         {
             _userManager = userManager;
             _roleManager = roleManager;
@@ -78,7 +78,7 @@ namespace WebAudio.Controllers
                 if (!roleExists)
                 {
                     // Opcional: criar o papel se não existir, ou retornar erro
-                    await _roleManager.CreateAsync(new ApplicationRole { Name = request.SelectedRole });
+                    await _roleManager.CreateAsync(new IdentityRole { Name = request.SelectedRole });
                 }
                 await _userManager.AddToRoleAsync(user, request.SelectedRole);
             }
