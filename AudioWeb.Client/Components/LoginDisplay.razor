@@ -17,6 +17,7 @@
 @code {
     private async Task BeginSignOut()
     {
+        await Task.Delay(100);
         Navigation.NavigateTo("authentication/logout");
     }
 }

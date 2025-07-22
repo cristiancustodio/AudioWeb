@@ -36,7 +36,7 @@
 @code {
     [CascadingParameter] IMudDialogInstance? MudDialog { get; set; }
 
-    private CreateUserRequest model = new();
+    private CreateUserRequest model;
     private MudForm form;
     private bool success;
     private string[] errors = { };

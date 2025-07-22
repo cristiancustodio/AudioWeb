@@ -27,7 +27,9 @@ builder.Services.AddScoped(sp => sp.GetRequiredService<IHttpClientFactory>().Cre
 
 // --- Configuração da Autenticação WASM ---
 // Configura a autenticação OpenID Connect (OIDC) usando IdentityServer.
-builder.Services.AddApiAuthorization();
+builder.Services.AddOidcAuthentication(options => {
+    // Configure as opções conforme sua identidade
+});
 
 // --- Configuração do MudBlazor ---
 builder.Services.AddMudServices();
